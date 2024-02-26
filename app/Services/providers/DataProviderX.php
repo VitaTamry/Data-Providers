@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Services\providers;
+namespace App\Services\Providers;
 
 use App\Enums\TransactionStatusEnum;
+use stdClass;
 
-class DataProviderx implements DataProvider
+class DataProviderX implements DataProvider
 {
     use TransactionFilterTrait;
     public $name = 'DataProviderX';
+    private $transactions = [];
     private $statusMap = [
         TransactionStatusEnum::paid => '1',
         TransactionStatusEnum::pending => '2',
@@ -24,8 +26,13 @@ class DataProviderx implements DataProvider
         'status' => 'transactionStatus'
     ];
 
-    private $filePath = storage_path('app/providers/DataProviderX.csv');
-    public function getTransactions($request): array
+    // private $filePath = storage_path('app/providers/DataProviderX.csv');
+
+    function __construct()
+    {
+        info('DataProviderX');
+    }
+    public function getTransactions(): DataProviderx
     {
         $transactions = [
             [
@@ -53,7 +60,8 @@ class DataProviderx implements DataProvider
                 'transactionIdentification' => 'd3d29d70-1d25-11e3-8591-034165a3a615'
             ]
         ];
-        return $transactions;
+        $this->transactions = $transactions;
+        return $this;
     }
 
     public function filterByAmountRange($transactions, $min = -INF, $max = INF): array

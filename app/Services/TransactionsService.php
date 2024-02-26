@@ -2,16 +2,19 @@
 
 namespace App\Services;
 
-use App\Services\providers\DataProvider;
-use Illuminate\Http\Client\Request;
+use App\Services\Providers\DataProvider;
+use App\Services\Providers\DataProviderX;
+// use App\Services\providers\DataProviderX;
+// use App\Services\providers\DataProviderX;
+use Illuminate\Http\Request;
 
 class TransactionsService
 {
 
     private $providers = [
-        'DataProviderX' => App\Services\DataProviderXService::class,
-        'DataProviderY' => App\Services\DataProviderYService::class,
-        'DataProviderZ' => App\Services\DataProviderZService::class
+        'DataProviderX' => 'App\Services\providers\DataProviderX',
+        // 'DataProviderY' => App\Services\DataProviderYService::class,
+        // 'DataProviderZ' => App\Services\DataProviderZService::class
     ];
     public function getTransactions(Request $request)
     {
@@ -19,8 +22,15 @@ class TransactionsService
         $transactions = [];
         foreach ($this->providers as $key => $providerClass) {
             if (!$providerQ || $providerQ == $key) {
-                $providerClass = $this->getTransactionsByProvider($request, new $providerClass());
-                $transactions = array_merge($transactions, $providerClass);
+                info($providerClass);
+                if (!class_exists($providerClass)) {
+                    info('Provider not found');
+                    continue;
+                }
+                $providerClass        = new DataProviderX;
+
+                $providerTransactions = $this->getTransactionsByProvider($request, $providerClass);
+                $transactions = array_merge($transactions, $providerTransactions);
             }
         }
         return $transactions;
@@ -34,6 +44,10 @@ class TransactionsService
      */
     public function getTransactionsByProvider(Request $request, DataProvider $provider): array
     {
-        return $provider->getTransactions($request);
+        if ($request->has('statusCode') || $request->has('currency') || $request->has('amountMin') || $request->has('amountMax')) {
+            $transactions = $provider->getTransactions();
+            return $provider->applyFilters($request, $transactions);
+        }
+        return $provider->getTransactions();
     }
 }

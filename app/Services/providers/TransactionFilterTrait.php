@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\providers;
+namespace App\Services\Providers;
 
 trait TransactionFilterTrait
 {
@@ -29,7 +29,7 @@ trait TransactionFilterTrait
     public function filterByStatus($transactions, $status): array
     {
         return array_filter($transactions, function ($transaction) use ($status) {
-            return $transaction['status'] == $status;
+            return $transaction[$this->getProviderTransactionsKeys()['status']] == $this->getProviderTransactionsStatusMap()[$status];
         });
     }
 
@@ -42,7 +42,7 @@ trait TransactionFilterTrait
     public function filterByCurrency($transactions, $currency): array
     {
         return array_filter($transactions, function ($transaction) use ($currency) {
-            return $transaction['currency'] == $currency;
+            return $transaction[$this->getProviderTransactionsKeys()['currency']] == $currency;
         });
     }
 
@@ -56,28 +56,33 @@ trait TransactionFilterTrait
     public function filterByAmountRange($transactions, $min = -INF, $max = INF): array
     {
         return array_filter($transactions, function ($transaction) use ($min, $max) {
-            return $transaction['amount'] >= $min && $transaction['amount'] <= $max;
+            return $transaction[$this->getProviderTransactionsKeys()['amount']] >= $min && $transaction[$this->getProviderTransactionsKeys()['amount']] <= $max;
         });
     }
 
+
     /**
-     * Format transactions keys
-     * @param array $transactions
+     * provider keys adapter
      * @return array
      */
-    public function formatTransactionsKeys($transactions): array
+    public function getProviderTransactionsKeys(): array
     {
-        if (!$this->attributesMap) return $transactions;
+        return [
+            'amount' => $this->attributesMap['amount'],
+            'currency' => $this->attributesMap['currency'],
+            'date' => $this->attributesMap['date'],
+            'id' => $this->attributesMap['id'],
+            'phone' => $this->attributesMap['phone'],
+            'status' => $this->attributesMap['status'],
+        ];
+    }
 
-        return array_map(function ($transaction) {
-            return [
-                'amount' => $transaction[$this->attributesMap['amount']],
-                'currency' => $transaction[$this->attributesMap['currency']],
-                'date' => $transaction[$this->attributesMap['date']],
-                'id' => $transaction[$this->attributesMap['id']],
-                'phone' => $transaction[$this->attributesMap['phone']],
-                'status' => $transaction[$this->attributesMap['status']],
-            ];
-        }, $transactions);
+    /**
+     * provider status map adapter
+     * @return array
+     */
+    public function getProviderTransactionsStatusMap(): array
+    {
+        return $this->statusMap;
     }
 }
