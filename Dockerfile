@@ -8,6 +8,8 @@ RUN useradd -u 1000 -ms /bin/bash -g www www
 WORKDIR /var/www/html
 COPY . /var/www/html
 RUN chown -R www:www /var/www/html
+RUN chmod -R 775 storage
 USER www
+COPY ./providersData storage/app/providers
 
 RUN composer install

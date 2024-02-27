@@ -46,6 +46,6 @@ class TransactionsController extends Controller
         if (count($transactions) > 0)
             return $this->jsonResponse('success', $transactions);
         else
-            return  $this->jsonResponse('Not Found', 'No transactions found', 404);
+            return  $this->jsonResponse('Not Found', null, 404);
     }
 }
