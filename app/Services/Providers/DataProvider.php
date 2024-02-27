@@ -18,8 +18,8 @@ interface DataProvider
      */
 
 
-    public function getTransactions(): array;
+    public function getTransactions(array $filters): array;
     public function getProviderTransactionsKeys(): array;
     public function getProviderTransactionsStatusMap(): array;
-    public function applyFilters($request, $transactions): array;
+    public function applyFilters($filters);
 }

@@ -8,10 +8,18 @@ use App\Services\Providers\DataProvider;
 class TransactionsService
 {
 
+
     private $providers = [
         'DataProviderX' => Providers\DataProviderX::class,
         'DataProviderY' => Providers\DataProviderY::class,
         'DataProviderW' => Providers\DataProviderW::class
+    ];
+
+    // will be used to get all available providers for the api request validation
+    public $availableProviders = [
+        'DataProviderX',
+        'DataProviderY',
+        'DataProviderW'
     ];
 
     /**
@@ -46,10 +54,7 @@ class TransactionsService
     public function getTransactionsByProvider(array $filter, DataProvider $provider): array
     {
 
-        $transactions = $provider->getTransactions();
-        if ($transactions && count($transactions) > 0 && $filter && count($filter) > 0) {
-            return $provider->applyFilters($filter, $transactions);
-        }
-        return  $transactions;
+
+        return   $provider->getTransactions($filter);
     }
 }

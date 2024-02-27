@@ -5,39 +5,44 @@ namespace App\Services\Providers;
 trait TransactionFilterTrait
 {
 
-    public function getTransactions(): array
+    private $transactions = [];
+
+    /**
+     * get all transactions then checks if there is a filter to apply
+     * 
+     * @param array $filter
+     * @return array
+     */
+    public function getTransactions($filter): array
     {
         try {
-            $transactions = json_decode(file_get_contents(storage_path($this->filePath)), true);
+            $this->transactions = json_decode(file_get_contents(storage_path($this->filePath)), true);
         } catch (\Exception $e) {
             info($e->getMessage());
-            $transactions = [];
+            $this->transactions = [];
         }
-        return $transactions;
+
+        if (count($this->transactions) > 0 && $filter && count($filter) > 0) {
+            $this->applyFilters($filter);
+        }
+
+        return $this->formatTransactions();
     }
 
 
-    public function applyFilters($filters, $transactions): array
+    public function applyFilters($filters)
     {
         if (isset($filters['statusCode'])) {
-            $transactions = $this->filterByStatus($transactions, $filters['statusCode']);
+            $this->transactions = $this->filterByStatus($this->transactions, $filters['statusCode']);
         }
         if (isset($filters['currency'])) {
-            $transactions = $this->filterByCurrency($transactions, $filters['currency']);
+            $this->transactions = $this->filterByCurrency($this->transactions, $filters['currency']);
         }
         if (isset($filters['amountMin']) || isset($filters['amountMax'])) {
             $min = $filters['amountMin'] ?? -INF;
             $max = $filters['amountMax'] ?? INF;
-            $transactions = $this->filterByAmountRange($transactions, $min, $max);
+            $this->transactions = $this->filterByAmountRange($this->transactions, $min, $max);
         }
-
-        if (count($transactions) == 0) {
-            return [];
-        }
-        $transactions = $this->formatTransactions($transactions);
-
-
-        return $transactions;
     }
 
     /**
@@ -49,7 +54,8 @@ trait TransactionFilterTrait
     public function filterByStatus($transactions, $status): array
     {
         return array_filter($transactions, function ($transaction) use ($status) {
-            return $transaction[$this->getProviderTransactionsKeys()['status']] == $this->getProviderTransactionsStatusMap()[$status];
+            return $transaction[$this->getProviderTransactionsKeys()['status']] ==
+                $this->getProviderTransactionsStatusMap()[$status];
         });
     }
 
@@ -87,14 +93,7 @@ trait TransactionFilterTrait
      */
     public function getProviderTransactionsKeys(): array
     {
-        return [
-            'amount' => $this->attributesMap['amount'],
-            'currency' => $this->attributesMap['currency'],
-            'created_at' => $this->attributesMap['created_at'],
-            'id' => $this->attributesMap['id'],
-            'phone' => $this->attributesMap['phone'],
-            'status' => $this->attributesMap['status'],
-        ];
+        return $this->attributesMap;
     }
 
     /**
@@ -112,7 +111,7 @@ trait TransactionFilterTrait
      * @return array
      * 
      */
-    public function formatTransactions($transactions): array
+    public function formatTransactions(): array
     {
         return array_map(function ($transaction) {
             return [
@@ -123,6 +122,6 @@ trait TransactionFilterTrait
                 'phone' => $transaction[$this->getProviderTransactionsKeys()['phone']],
                 'status' => array_search($transaction[$this->getProviderTransactionsKeys()['status']], $this->getProviderTransactionsStatusMap()),
             ];
-        }, $transactions);
+        }, $this->transactions);
     }
 }

@@ -36,7 +36,7 @@ class TransactionsController extends Controller
             'currency' => 'string',
             'amountMin' => 'numeric',
             'amountMax' => 'numeric',
-            'provider' => 'string'
+            'provider' => ['string', Rule::in($this->transactionsService->availableProviders)]
         ]);
         if ($validator->fails()) {
             return $this->jsonResponse('Bad Request', $validator->errors(), 400);
