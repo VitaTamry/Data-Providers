@@ -3,33 +3,34 @@
 namespace App\Services;
 
 use App\Services\Providers\DataProvider;
-use App\Services\Providers\DataProviderX;
-// use App\Services\providers\DataProviderX;
-// use App\Services\providers\DataProviderX;
-use Illuminate\Http\Request;
+
 
 class TransactionsService
 {
 
     private $providers = [
-        'DataProviderX' => 'App\Services\providers\DataProviderX',
-        // 'DataProviderY' => App\Services\DataProviderYService::class,
-        // 'DataProviderZ' => App\Services\DataProviderZService::class
+        'DataProviderX' => Providers\DataProviderX::class,
+        'DataProviderY' => Providers\DataProviderY::class,
+        'DataProviderW' => Providers\DataProviderW::class
     ];
-    public function getTransactions(Request $request)
+
+    /**
+     * get all transactions from all providers
+     * @param array $filter
+     * @return array
+     */
+    public function getTransactions(array $filter)
     {
-        $providerQ = $request->input('provider');
+        $providerQ = isset($filter['provider']) ? $filter['provider'] : null;
         $transactions = [];
         foreach ($this->providers as $key => $providerClass) {
             if (!$providerQ || $providerQ == $key) {
-                info($providerClass);
                 if (!class_exists($providerClass)) {
                     info('Provider not found');
                     continue;
                 }
-                $providerClass        = new DataProviderX;
-
-                $providerTransactions = $this->getTransactionsByProvider($request, $providerClass);
+                $providerClass        = new $providerClass;
+                $providerTransactions = $this->getTransactionsByProvider($filter, $providerClass);
                 $transactions = array_merge($transactions, $providerTransactions);
             }
         }
@@ -38,16 +39,17 @@ class TransactionsService
 
     /**
      * get all transactions from a specific provider
-     * @param Request $request
+     * @param array $filter
      * @param DataProvider $provider
      * @return array
      */
-    public function getTransactionsByProvider(Request $request, DataProvider $provider): array
+    public function getTransactionsByProvider(array $filter, DataProvider $provider): array
     {
-        if ($request->has('statusCode') || $request->has('currency') || $request->has('amountMin') || $request->has('amountMax')) {
-            $transactions = $provider->getTransactions();
-            return $provider->applyFilters($request, $transactions);
+
+        $transactions = $provider->getTransactions();
+        if ($transactions && count($transactions) > 0 && $filter && count($filter) > 0) {
+            return $provider->applyFilters($filter, $transactions);
         }
-        return $provider->getTransactions();
+        return  $transactions;
     }
 }
