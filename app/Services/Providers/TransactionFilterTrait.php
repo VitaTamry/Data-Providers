@@ -16,6 +16,7 @@ trait TransactionFilterTrait
     public function getTransactions($filter): array
     {
         try {
+            // @todo implement JsonMachine to handle large files
             $this->transactions = json_decode(file_get_contents(storage_path($this->filePath)), true);
         } catch (\Exception $e) {
             info($e->getMessage());

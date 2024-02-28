@@ -25,9 +25,4 @@ class DataProviderY implements DataProvider
         'status' => 'status'
     ];
     private $filePath = 'app/providers/DataProviderY.json';
-
-    function __construct()
-    {
-        info('DataProviderY');
-    }
 }

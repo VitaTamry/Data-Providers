@@ -25,9 +25,4 @@ class DataProviderW implements DataProvider
         'status' => 'status'
     ];
     private $filePath = 'app/providers/DataProviderW.json';
-
-    function __construct()
-    {
-        info('DataProviderW');
-    }
 }

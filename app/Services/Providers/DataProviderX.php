@@ -26,9 +26,4 @@ class DataProviderX implements DataProvider
     ];
 
     private $filePath = 'app/providers/DataProviderX.json';
-
-    function __construct()
-    {
-        info('DataProviderX');
-    }
 }

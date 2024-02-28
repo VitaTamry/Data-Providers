@@ -34,7 +34,6 @@ class TransactionsService
         foreach ($this->providers as $key => $providerClass) {
             if (!$providerQ || $providerQ == $key) {
                 if (!class_exists($providerClass)) {
-                    info('Provider not found');
                     continue;
                 }
                 $providerClass        = new $providerClass;
@@ -53,8 +52,6 @@ class TransactionsService
      */
     public function getTransactionsByProvider(array $filter, DataProvider $provider): array
     {
-
-
         return   $provider->getTransactions($filter);
     }
 }

@@ -71,6 +71,7 @@ class TransactionsController extends Controller
     public function index(Request $request)
     {
 
+        // @todo move this validation to a request class
         $validator = Validator::make($request->all(), [
             'statusCode' => ['string', Rule::in(TransactionStatusEnum::getValues())],
             'currency' => 'string',
