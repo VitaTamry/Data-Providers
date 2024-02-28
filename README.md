@@ -18,13 +18,13 @@ To set up the project locally using Docker, follow these steps:
 1. Clone the repository:
 
     ```shell
-    git clone https://github.com/username/repository.git
+    git git@github.com:VitaTamry/easycash-assessment.git
     ```
 
 2. Build the Docker containers using Docker Compose:
 
     ```shell
-    docker-compose build
+    docker-compose up --build
     ```
 ## Live Demo
 
