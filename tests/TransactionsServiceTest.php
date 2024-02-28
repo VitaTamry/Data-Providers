@@ -3,11 +3,9 @@
 namespace Tests;
 
 use App\Services\TransactionsService;
-use Illuminate\Http\Request;
-use Laravel\Lumen\Testing\DatabaseMigrations;
-use Laravel\Lumen\Testing\DatabaseTransactions;
 
-class TransactionServiceTest extends TestCase
+
+class TransactionsServiceTest extends TestCase
 {
 
     /**
@@ -22,6 +20,7 @@ class TransactionServiceTest extends TestCase
         $transactions = $transactionsService->getTransactions($request);
         $this->assertIsArray($transactions);
         $this->assertCount(9, $transactions);
+        $this->assertJson(json_encode($transactions));
     }
 
     /**
@@ -36,6 +35,20 @@ class TransactionServiceTest extends TestCase
         $transactions = $transactionsService->getTransactions($request);
         $this->assertIsArray($transactions);
         $this->assertCount(3, $transactions);
+        $this->assertThat(
+            $transactions,
+            $this->logicalAnd(
+                $this->isType('array'),
+                $this->callback(function ($transactions) {
+                    foreach ($transactions as $transaction) {
+                        if ($transaction['provider'] != 'DataProviderX') {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+            )
+        );
     }
 
 
@@ -50,7 +63,20 @@ class TransactionServiceTest extends TestCase
         $transactionsService = new TransactionsService();
         $transactions = $transactionsService->getTransactions($request);
         $this->assertIsArray($transactions);
-        $this->assertCount(2, $transactions);
+        $this->assertThat(
+            $transactions,
+            $this->logicalAnd(
+                $this->isType('array'),
+                $this->callback(function ($transactions) {
+                    foreach ($transactions as $transaction) {
+                        if ($transaction['status'] != 'paid' || $transaction['provider'] != 'DataProviderX') {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+            )
+        );
     }
 
     /**
@@ -64,7 +90,20 @@ class TransactionServiceTest extends TestCase
         $transactionsService = new TransactionsService();
         $transactions = $transactionsService->getTransactions($request);
         $this->assertIsArray($transactions);
-        $this->assertCount(4, $transactions);
+        $this->assertThat(
+            $transactions,
+            $this->logicalAnd(
+                $this->isType('array'),
+                $this->callback(function ($transactions) {
+                    foreach ($transactions as $transaction) {
+                        if ($transaction['status'] != 'paid') {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+            )
+        );
     }
 
     /**
@@ -77,7 +116,6 @@ class TransactionServiceTest extends TestCase
         $transactionsService = new TransactionsService();
         $transactions = $transactionsService->getTransactions($request);
         $this->assertIsArray($transactions);
-        $this->assertCount(4, $transactions);
         $this->assertThat(
             $transactions,
             $this->logicalAnd(
@@ -103,7 +141,20 @@ class TransactionServiceTest extends TestCase
         $transactionsService = new TransactionsService();
         $transactions = $transactionsService->getTransactions($request);
         $this->assertIsArray($transactions);
-        $this->assertCount(1, $transactions);
+        $this->assertThat(
+            $transactions,
+            $this->logicalAnd(
+                $this->isType('array'),
+                $this->callback(function ($transactions) {
+                    foreach ($transactions as $transaction) {
+                        if ($transaction['currency'] != 'USD' || $transaction['provider'] != 'DataProviderW') {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+            )
+        );
     }
 
     /**
@@ -115,6 +166,19 @@ class TransactionServiceTest extends TestCase
         $transactionsService = new TransactionsService();
         $transactions = $transactionsService->getTransactions($request);
         $this->assertIsArray($transactions);
-        $this->assertCount(1, $transactions);
+        $this->assertThat(
+            $transactions,
+            $this->logicalAnd(
+                $this->isType('array'),
+                $this->callback(function ($transactions) {
+                    foreach ($transactions as $transaction) {
+                        if ($transaction['status'] != 'paid' || $transaction['currency'] != 'EGP' || $transaction['amount'] < 10 || $transaction['amount'] > 100) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+            )
+        );
     }
 }

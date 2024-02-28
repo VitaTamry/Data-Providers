@@ -121,6 +121,7 @@ trait TransactionFilterTrait
                 'created_at' => $transaction[$this->getProviderTransactionsKeys()['created_at']],
                 'phone' => $transaction[$this->getProviderTransactionsKeys()['phone']],
                 'status' => array_search($transaction[$this->getProviderTransactionsKeys()['status']], $this->getProviderTransactionsStatusMap()),
+                'provider' => $this->name,
             ];
         }, $this->transactions);
     }
