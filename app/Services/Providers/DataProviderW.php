@@ -4,19 +4,19 @@ namespace App\Services\Providers;
 
 use App\Enums\TransactionStatusEnum;
 
-class DataProviderW implements DataProvider
+class DataProviderW extends DataProviderBase implements DataProvider
 {
     use TransactionFilterTrait;
     public $name = 'DataProviderW';
 
-    private $transactions = [];
-    private $statusMap = [
+    protected $transactions = [];
+    protected $statusMap = [
         TransactionStatusEnum::paid->value => 'done',
         TransactionStatusEnum::pending->value => 'wait',
         TransactionStatusEnum::reject->value => 'nope'
     ];
 
-    private $attributesMap = [
+    protected $attributesMap = [
         'amount' => 'amount',
         'currency' => 'currency',
         'created_at' => 'created_at',
@@ -24,5 +24,5 @@ class DataProviderW implements DataProvider
         'phone' => 'phone',
         'status' => 'status'
     ];
-    private $filePath = 'app/providers/DataProviderW.json';
+    protected $filePath = 'app/providers/DataProviderW.json';
 }
