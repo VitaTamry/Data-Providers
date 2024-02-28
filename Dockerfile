@@ -15,3 +15,4 @@ RUN chmod -R 775 storage
 USER www
 
 RUN composer install
+RUN php artisan swagger-lume:generate
