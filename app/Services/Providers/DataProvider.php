@@ -6,14 +6,13 @@ use stdClass;
 
 interface DataProvider
 {
-    /**
-     * @property $name
-     */
+
 
     /**
+     * @property $name
+     *
      * @property $statusMap
-     */
-    /**
+     *
      * @property $attributesMap
      */
 

@@ -24,9 +24,49 @@ class TransactionsController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/v1/transactions",
+     *     tags={"Transactions"},
+     *     summary="Get all transactions with filters",
+     *     description="Get all transactions with filters",
+     *     operationId="getTransactions",
+     *     @OA\Parameter(name="statusCode",in="query",description="status code",required=false,
+     *         @OA\Schema(type="string", enum={"paid", "pending", "reject"})
+     *     ),
+     *     @OA\Parameter(name="currency",in="query",description="currency",required=false,
+     *         @OA\Schema( type="string" )
+     *     ),
+     *     @OA\Parameter(name="amountMin",in="query",description="minimum amount",required=false,
+     *         @OA\Schema( type="number" )
+     *     ),
+     *     @OA\Parameter(name="amountMax",in="query",description="maximum amount",required=false,
+     *         @OA\Schema(type="number")
+     *     ),
+     *     @OA\Parameter( name="provider", in="query",description="provider", required=false,
+     *         @OA\Schema(type="string", enum={"DataProviderX", "DataProviderY", "DataProviderW"})
+     *     ),
+     * 
+     *     @OA\Response(response=200, description="successful operation",
+     *        @OA\JsonContent(
+     *          @OA\Property(property="status", type="string", example="success"),
+     *          @OA\Property(property="payload", type="array", @OA\Items(
+     *            @OA\Property(property="id", type="integer", example=1),
+     *            @OA\Property(property="amount", type="number", example=200),
+     *            @OA\Property(property="currency", type="string", example="USD"),
+     *            @OA\Property(property="statusCode", type="string", example="paid"),
+     *            @OA\Property(property="provider", type="string", example="DataProviderX"),
+     *            @OA\Property(property="created_at", type="string", example="2021-01-01 00:00:00"),
+     *           ),
+     *         ),
+     *       ),
+     *     ),
+     *     @OA\Response(response=400, description="Bad Request"),
+     *     @OA\Response(response=404, description="Not Found")
+     * )
+     * 
+     *
      * Show all transactions
      * @return /Iluminate/Http/Response
-     * 
      */
     public function index(Request $request)
     {
