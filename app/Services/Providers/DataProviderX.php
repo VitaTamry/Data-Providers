@@ -4,9 +4,8 @@ namespace App\Services\Providers;
 
 use App\Enums\TransactionStatusEnum;
 
-class DataProviderX extends DataProviderBase implements DataProvider
+class DataProviderX extends DataProviderBase
 {
-    use TransactionFilterTrait;
     public $name = 'DataProviderX';
 
     protected $transactions = [];
@@ -26,8 +25,4 @@ class DataProviderX extends DataProviderBase implements DataProvider
     ];
 
     protected $filePath = 'app/providers/DataProviderX.json';
-
-    public function __construct()
-    {
-    }
 }

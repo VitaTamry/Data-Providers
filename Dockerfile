@@ -16,3 +16,4 @@ USER www
 
 RUN composer install
 RUN php artisan swagger-lume:generate
+RUN php artisan db:seed

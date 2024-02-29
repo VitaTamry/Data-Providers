@@ -2,9 +2,10 @@
 
 namespace App\Services\Providers;
 
-use App\Enums\TransactionStatusEnum;
+use \JsonMachine\Items;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
-abstract class DataProviderBase
+abstract class DataProviderBase implements DataProvider
 {
     use TransactionFilterTrait;
     public $name;
@@ -12,8 +13,17 @@ abstract class DataProviderBase
     protected $transactions = [];
     protected $statusMap;
 
-    protected $attributesMap;
+    protected $attributesMap = [
+        'amount' => 'amount',
+        'currency' => 'currency',
+        'created_at' => 'created_at',
+        'id' => 'id',
+        'phone' => 'phone',
+        'status' => 'status'
+    ];
     protected $filePath;
+    protected $chunkSize = 100;
+
 
     /**
      * get all transactions then checks if there is a filter to apply
@@ -24,15 +34,37 @@ abstract class DataProviderBase
     public function getTransactions($filter): array
     {
         try {
-            // @todo implement JsonMachine to handle large files
-            $this->transactions = json_decode(file_get_contents(storage_path($this->filePath)), true);
+
+            $transactionsStream = Items::fromFile(storage_path($this->filePath), ['decoder' => new ExtJsonDecoder(true)]);
         } catch (\Exception $e) {
             info($e->getMessage());
             return $this->transactions = [];
         }
 
-        if (count($this->transactions) > 0 && $filter && count($filter) > 0) {
-            $this->applyFilters($filter);
+        $transactionsChunk = [];
+
+        foreach ($transactionsStream as $transaction) {
+
+            // save each 100 transactions to chucks bag
+            array_push($transactionsChunk, $transaction);
+
+            if (count($transactionsChunk) == $this->chunkSize) {
+
+                // if there's a filter apply it to the chunk
+                if ($filter && count($filter) > 0) {
+                    $filterdTransactions = $this->applyFilters($filter, $transactionsChunk);
+
+                    array_map(function ($filterdTransaction) use (&$count) {
+                        array_push($this->transactions, $filterdTransaction);
+                    }, $filterdTransactions);
+                } else {
+                    array_map(function ($transaction) use (&$count) {
+                        array_push($this->transactions, $transaction);
+                    }, $transactionsChunk);
+                }
+                // reset the chunk
+                $transactionsChunk = [];
+            }
         }
 
         return $this->formatTransactions();

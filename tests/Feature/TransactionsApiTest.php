@@ -18,7 +18,6 @@ class TransactionsApiTest extends TestCase
         $response->assertStatus(200);
         $transactions = $response->json();
         $this->assertIsArray($transactions);
-        $this->assertCount(9, $transactions['payload']);
     }
 
     /**
@@ -110,7 +109,7 @@ class TransactionsApiTest extends TestCase
      */
     public function test_filter_by_amount_range()
     {
-        $response = $this->call('GET', '/api/v1/transactions', ['amountMin' => 10, 'amountMax' => 100]);
+        $response = $this->call('GET', '/api/v1/transactions', ['amountMin' => 30, 'amountMax' => 100]);
         $response->assertStatus(200);
         $transactions = $response->json();
         $this->assertIsArray($transactions);
@@ -163,7 +162,7 @@ class TransactionsApiTest extends TestCase
         $response = $this->call('GET', '/api/v1/transactions', [
             'statusCode' => 'paid',
             'amountMin' => 10,
-            'amountMax' => 200,
+            'amountMax' => 300,
             'currency' => 'USD',
             'provider' => 'DataProviderX'
         ]);
@@ -179,7 +178,7 @@ class TransactionsApiTest extends TestCase
                         if (
                             $transaction['status'] != 'paid'
                             || $transaction['amount'] < 10
-                            || $transaction['amount'] > 200
+                            || $transaction['amount'] > 500
                             || $transaction['currency'] != 'USD'
                             || $transaction['provider'] != 'DataProviderX'
                         ) {

@@ -20,5 +20,5 @@ interface DataProvider
     public function getTransactions(array $filters): array;
     public function getProviderTransactionsKeys(): array;
     public function getProviderTransactionsStatusMap(): array;
-    public function applyFilters($filters);
+    public function applyFilters($filters, $transactionsChunk): array;
 }

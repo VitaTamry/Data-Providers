@@ -5,14 +5,16 @@ namespace App\Services\Providers;
 trait TransactionFilterTrait
 {
 
-    public function applyFilters($filters)
+    public function applyFilters($filters, $transactions): array
     {
         foreach ($filters as $filter => $value) {
-            if (method_exists($this, $filter)) {
-                $this->transactions =   $this->$filter($this->transactions, $value);
+            if (method_exists($this, $filter) && count($transactions) > 0) {
+                $transactions = $this->$filter($transactions, $value);
             }
         }
+        return $transactions;
     }
+
 
     /**
      * Filter transactions by status
@@ -20,9 +22,9 @@ trait TransactionFilterTrait
      * @param string $status
      * @return array
      */
-    public function statusCode($transactions, $status): array
+    public function statusCode($transactions, $status)
     {
-        return array_filter($transactions, function ($transaction) use ($status) {
+        return  array_filter($transactions, function ($transaction) use ($status) {
             return $transaction[$this->getProviderTransactionsKeys()['status']] ==
                 $this->getProviderTransactionsStatusMap()[$status];
         });
@@ -34,7 +36,7 @@ trait TransactionFilterTrait
      * @param string $currency
      * @return array
      */
-    public function currency($transactions, $currency): array
+    public function currency($transactions, $currency)
     {
         return array_filter($transactions, function ($transaction) use ($currency) {
             return $transaction[$this->getProviderTransactionsKeys()['currency']] == $currency;
@@ -47,22 +49,23 @@ trait TransactionFilterTrait
      * @param int $min
      * @return array
      */
-    public function amountMin($transactions, $min = -INF): array
+    public function amountMin($transactions, $min = -INF)
     {
         return array_filter($transactions, function ($transaction) use ($min) {
-            return $transaction[$this->getProviderTransactionsKeys()['amount']] >= $min;
+            return ((float)$transaction[$this->getProviderTransactionsKeys()['amount']] >= (float)$min);
         });
     }
+
     /**
      * Filter transactions by maximum amount
      * @param array $transactions
      * @param int $max
      * @return array
      */
-    public function amountMax($transactions, $max = INF): array
+    public function amountMax($transactions, $max): array
     {
         return array_filter($transactions, function ($transaction) use ($max) {
-            return  $transaction[$this->getProviderTransactionsKeys()['amount']] <= $max;
+            return ((float)$transaction[$this->getProviderTransactionsKeys()['amount']] <= (float) $max);
         });
     }
 }
