@@ -42,7 +42,7 @@ abstract class DataProviderBase implements DataProvider
         }
 
         $transactionsChunk = [];
-
+// @todo: handle the foreach left-overs and refactor this method
         foreach ($transactionsStream as $transaction) {
 
             // save each 100 transactions to chucks bag
