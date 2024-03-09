@@ -28,10 +28,10 @@ To set up the project locally using Docker, follow these steps:
     ```
 ## Live Demo
 
-To see a live demo of the project, visit [Demo Link](http://18.192.67.174:8080/).
+To see a live demo of the project, visit [Demo Link](http://18.192.67.174:8080/). ((offline))
 
 ## API Documentation
 
-The URI of the API documentation is ```api/documentation```, or go to the [API Documentation - Live](http://18.192.67.174:8080/api/documentation).
+The URI of the API documentation is ```api/documentation```, or go to the [API Documentation - Live](http://18.192.67.174:8080/api/documentation). ((offline))
     
 
